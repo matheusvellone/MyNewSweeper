@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <meta charset="utf-8"></meta>
+    <link href='bootstrap.min.css' rel='stylesheet'>
+    <link href='custom.css' rel='stylesheet'>
+
+    <script src='jquery-2.1.4.min.js'></script>
+    <script src='definitions.js'></script>
+    <script src='utils.js'></script>
+    <script src='custom.js'></script>
+  </head>
+  <body class="container-fluid">
+    <div class='row'>
+      <div class='col-md-12'>
+        <input type="number" id="nX" value=12>x
+        <input type="number" id="nY" value=12>
+        <input type="number" id="minas" value=40>
+        <input type="checkbox" id='debug'>
+        <div class="btn btn-primary" id="gerar">
+          Gerar Campo Minado
+        </div>
+      </div>
+    </div>
+    <div id="game" oncontextmenu="return false;">
+    </div>
+  </body>
+</html>
