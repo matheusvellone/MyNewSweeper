@@ -1,22 +1,23 @@
 <html>
   <head>
     <meta charset="utf-8"></meta>
+
+    <title>MyNewSweeper Demo</title>
+
     <link href='bootstrap.min.css' rel='stylesheet'>
     <link href='custom.css' rel='stylesheet'>
 
     <script src='jquery-2.1.4.min.js'></script>
-    <script src='utils.js'></script>
     <script src='MyNewSweeper.js'></script>
     <script src='test.js'></script>
   </head>
   <body class="container-fluid">
     <div class='row'>
       <div class='col-md-12'>
-        <input type="number" id="nX" value=12>x
-        <input type="number" id="nY" value=12>
-        <input type="number" id="minas" value=40>
-        <input type="checkbox" id='debug'>
-        <div class="btn btn-primary" id="gerar">
+        <input type="number" id="numRows" value=20>x
+        <input type="number" id="numColumns" value=20>
+        <input type="text" id="numMines" value=100>
+        <div class="btn btn-primary" id="start">
           Gerar Campo Minado
         </div>
       </div>
@@ -25,7 +26,7 @@
       <div id="toWin">
       </div>
     </div>
-    <div id="game" oncontextmenu="return false;">
+    <div id="game">
     </div>
   </body>
 </html>

@@ -2,6 +2,14 @@ var SAFE = 0;
 var MINE = 1;
 var FLAG = 2;
 var REVELADO = 4;
+var TEST = false;
+
+var dificulties = {
+  easy : 0.07,
+  medium : 0.20,
+  hard : 0.33,
+  luckiest : 0.40
+}
 
 var campoMatrix = [];
 var gOpts;
@@ -10,8 +18,9 @@ var cellsToWin;
 var minasVizinhasAttr = 'nm';
 
 var defaults = {
-  gameElement: '#game',
-  cellsToWin: '#toWin',
+  gameSelector: '#game',
+  cellsSelector: '#toWin',
+  timeSelector: '#elapsedTime',
 
   numRows: 12,
   numColumns: 12,
@@ -20,14 +29,14 @@ var defaults = {
   tooManyMinesMsg: "The number of mines can't exceed #percent# of the blocks. Using #numberOfMines# mines this round.",
   cellsToWinMsg: '#cellsToWin# remaining hidden cells.',
 
-  test : false,
   classes : {
     rows: 'row',
     flag: 'btn-success',
+    clickedMine: 'btn-warning',
     hidden: 'btn-info',
     mine: 'btn-danger',
     revealed: 'btn-default',
-    allCells: 'cell btn'
+    allCells: 'btn cell'
   },
   numberColors: [
     '#421ecc',
@@ -51,7 +60,7 @@ var defaults = {
   onWin: function(){
     alert('You won!');
   },
-  onExceedNumerOfMines: function(msg){
+  onExceedNumberOfMines: function(msg){
     alert(msg);
   }
 };
@@ -61,11 +70,14 @@ function MyNewSweeper(opts){
   opts.classes = $.extend({}, defaults.classes, opts.classes);
   //Global object merge
   gOpts = $.extend({}, defaults, opts);
-  //
+  //Mount elements (rows, cells...) base on classes
   gOpts.init();
 
   geraCampo();
-  $('body').on('mousedown', '.'+gOpts.classes.allCells.split(' ').join('.'), function(evt){
+  geraMinas();
+  geraVizinhanca();
+  updateCellsToWin();
+  $('.'+gOpts.classes.allCells.split(' ').join('.')).on('mousedown', function(evt){
     var _this = $(this);
     var clickedX = _this.attr('x');
     var clickedY = _this.attr('y');
@@ -88,13 +100,11 @@ function MyNewSweeper(opts){
         default://ANY OTHER BUTTON
     }
   });
-  geraMinas();
-  geraVizinhanca();
-  updateCellsToWin();
+  $(gOpts.gameSelector).attr('oncontextmenu',"return false;");
 }
 
 function teste(f){
-  if (gOpts.test) {
+  if (TEST) {
     f();
   }
 }
@@ -118,10 +128,11 @@ function clickRight(x, y){
 function clickLeft(x, y){
   if(campoMatrix[x][y] == MINE){
     revealMines();
+    selectCell(x,y).removeClass(gOpts.classes.mine).addClass(gOpts.classes.clickedMine);
     gOpts.onGameOver();
     return;
   }
-  if(campoMatrix[x][y] != FLAG && campoMatrix[x][y] != REVELADO){
+  if(campoMatrix[x][y] != (FLAG + SAFE) && campoMatrix[x][y] != (FLAG + MINE) && campoMatrix[x][y] != REVELADO){
     revelarClicado(x, y)
   }
 }
@@ -137,7 +148,12 @@ function revealMines(){
 }
 
 function updateCellsToWin(){
-  $(gOpts.cellsToWin).text(gOpts.cellsToWinMsg.replace('#cellsToWin#', cellsToWin))
+  if(gOpts.cellsToWinMsg !== false){
+    var replaceMap = {
+      '#cellsToWin#': cellsToWin
+    };
+    $(gOpts.cellsSelector).text(replaceAll(gOpts.cellsToWinMsg, replaceMap));
+  }
   if(cellsToWin == 0){
     gOpts.onWin();
   }
@@ -176,7 +192,7 @@ function geraCampo(){
   teste(function(){
     console.log('Gerando Campo: ',gOpts.numRows,'x',gOpts.numColumns);
   });
-  var campo = $(gOpts.gameElement);
+  var campo = $(gOpts.gameSelector);
   campo.empty();
   campoMatrix = [];
   for (var x = 0; x < gOpts.numRows; x++) {
@@ -190,12 +206,22 @@ function geraCampo(){
 }
 
 function geraMinas(){
-  if(gOpts.numMines/(gOpts.numRows * gOpts.numColumns) > gOpts.mineLimit){
+  if(isNaN(gOpts.numMines)) {
+    if (!dificulties.hasOwnProperty(gOpts.numMines)){
+      throw new Error('Incorrect numMines parameter. Use some number or some of the available dificulties');
+      return;
+    }
+    gOpts.numMines = gOpts.numRows * gOpts.numColumns * dificulties[gOpts.numMines];
+  } else if(gOpts.numMines/(gOpts.numRows * gOpts.numColumns) > gOpts.mineLimit){
     gOpts.numMines = Math.floor(gOpts.numRows * gOpts.numColumns * gOpts.mineLimit);
 
-    var msg = gOpts.tooManyMinesMsg.replace('#percent#', gOpts.mineLimit*100 + '%');
-    msg = msg.replace('#numberOfMines#', gOpts.numMines);
-    gOpts.onExceedNumerOfMines(msg);
+    if(tooManyMinesMsg !== false){
+      var replaceMap = {
+        '#percent#': gOpts.mineLimit*100 + '%',
+        '#numberOfMines#': gOpts.numMines
+      };
+      gOpts.onExceedNumberOfMines(replaceAll(gOpts.tooManyMinesMsg, replaceMap));
+    }
   }
   cellsToWin = gOpts.numRows * gOpts.numColumns - gOpts.numMines;
   teste(function(){
@@ -224,6 +250,13 @@ function geraVizinhanca(){
   }
 }
 
+function replaceAll(msg, map){
+  for(var rplc in map){
+    msg = msg.replace(rplc, map[rplc]);
+  }
+  return msg;
+}
+
 function contaMinasVizinhas(x, y){
   var n = 0;
   for (var i = x-1; i <= x+1; i++) {
@@ -245,5 +278,5 @@ function randomIntFromInterval(min,max){
 }
 
 function selectCell(x, y){
-  return $('.cell[x="'+x+'"][y="'+y+'"]');
+  return $('.'+gOpts.classes.allCells.split(' ').join('.')+'[x="'+x+'"][y="'+y+'"]');
 }
