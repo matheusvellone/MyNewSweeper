@@ -32,10 +32,11 @@ var defaults = {
   classes : {
     rows: 'row',
     flag: 'btn-success',
-    clickedMine: 'btn-warning',
+    clickedMine: 'btn-primary',
     hidden: 'btn-info',
     mine: 'btn-danger',
     revealed: 'btn-default',
+    wrongFlag: 'btn-warning',
     allCells: 'btn cell'
   },
   numberColors: [
@@ -142,6 +143,8 @@ function revealMines(){
     for (var y = 0; y < gOpts.numColumns; y++) {
       if(campoMatrix[x][y] == MINE){
         selectCell(x,y).removeClass(gOpts.classes.hidden).addClass(gOpts.classes.mine);
+      } else if(campoMatrix[x][y] == (SAFE + FLAG)){
+        selectCell(x,y).removeClass(gOpts.classes.hidden).addClass(gOpts.classes.wrongFlag);
       }
     }
   }
