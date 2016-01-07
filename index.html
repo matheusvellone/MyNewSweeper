@@ -1,0 +1,38 @@
+<html>
+  <head>
+    <meta charset="utf-8"></meta>
+
+    <title>MyNewSweeper Demo</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <style type="text/css">
+      .cell{
+        width: 40px;
+        height: 40px;
+        border: 1px solid #000;
+      }
+    </style>
+
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js'></script>
+    <script src='MyNewSweeper.min.js'></script>
+    <script src='MyNewSweeper-demo.js'></script>
+  </head>
+  <body class="container-fluid">
+    <div class='row'>
+      <div class='col-md-12'>
+        <input type="number" id="numRows" value=20>x
+        <input type="number" id="numColumns" value=20>
+        <input type="text" id="numMines" value=100>
+        <div class="btn btn-primary" id="start">
+          Gerar Campo Minado
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div id="toWin">
+      </div>
+    </div>
+    <div id="game">
+    </div>
+  </body>
+</html>
