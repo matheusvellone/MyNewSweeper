@@ -14,13 +14,16 @@ var dificulties = {
 var campoMatrix = [];
 var gOpts;
 var cellsToWin;
+var cellSelector;
 
 var minasVizinhasAttr = 'nm';
 
 var defaults = {
   gameSelector: '#game',
-  cellsSelector: '#toWin',
+  cellsToWinSelector: '#toWin',
   timeSelector: '#elapsedTime',
+
+  restartOnGameOver: true,
 
   numRows: 12,
   numColumns: 12,
@@ -74,11 +77,16 @@ function MyNewSweeper(opts){
   //Mount elements (rows, cells...) base on classes
   gOpts.init();
 
+  start();
+}
+
+function start(){
+  cellSelector = '.'+gOpts.classes.allCells.split(' ').join('.');
   geraCampo();
   geraMinas();
   geraVizinhanca();
   updateCellsToWin();
-  $('.'+gOpts.classes.allCells.split(' ').join('.')).on('mousedown', function(evt){
+  $(cellSelector).on('mousedown', function(evt){
     var _this = $(this);
     var clickedX = _this.attr('x');
     var clickedY = _this.attr('y');
@@ -90,15 +98,12 @@ function MyNewSweeper(opts){
             });
             clickLeft(clickedX, clickedY);
             break;
-        case 2://MIDDLE
-            break;
         case 3://RIGHT
             teste(function(){
               console.log('Right Click on: ',clickedX,clickedY);
             });
             clickRight(clickedX, clickedY);
             break;
-        default://ANY OTHER BUTTON
     }
   });
   $(gOpts.gameSelector).attr('oncontextmenu',"return false;");
@@ -126,15 +131,23 @@ function clickRight(x, y){
   }
 }
 
+function gameOver(callback){
+  callback();
+  if(gOpts.restartOnGameOver){
+    start();
+  }
+}
+
 function clickLeft(x, y){
   if(campoMatrix[x][y] == MINE){
     revealMines();
     selectCell(x,y).removeClass(gOpts.classes.mine).addClass(gOpts.classes.clickedMine);
-    gOpts.onGameOver();
+    gameOver(gOpts.onGameOver);
     return;
   }
-  if(campoMatrix[x][y] != (FLAG + SAFE) && campoMatrix[x][y] != (FLAG + MINE) && campoMatrix[x][y] != REVELADO){
-    revelarClicado(x, y)
+  if(campoMatrix[x][y] == SAFE || campoMatrix[x][y] == MINE){
+    revelar(x, y);
+    updateCellsToWin();
   }
 }
 
@@ -155,25 +168,23 @@ function updateCellsToWin(){
     var replaceMap = {
       '#cellsToWin#': cellsToWin
     };
-    $(gOpts.cellsSelector).text(replaceAll(gOpts.cellsToWinMsg, replaceMap));
+    $(gOpts.cellsToWinSelector).text(replaceAll(gOpts.cellsToWinMsg, replaceMap));
   }
   if(cellsToWin == 0){
-    gOpts.onWin();
+    gameOver(gOpts.onWin);
   }
 }
 
-function revelarClicado(x, y){
+function revelar(x, y){
   cellsToWin--;
   campoMatrix[x][y] = REVELADO;
-  var clickedCell = selectCell(x, y);
-  var nearMines = clickedCell.attr(minasVizinhasAttr);
-  clickedCell = clickedCell.removeClass(gOpts.classes.hidden).addClass(gOpts.classes.revealed);
-  if(nearMines != 0){
-    clickedCell.find('strong').text(nearMines).css('color', gOpts.numberColors[nearMines-1]);
-  }
-  updateCellsToWin();
+  var cell = selectCell(x, y);
+  var nearMines = cell.attr(minasVizinhasAttr);
+  cell = cell.removeClass(gOpts.classes.hidden).addClass(gOpts.classes.revealed);
   if(nearMines == 0){
-    abreVizinhos(x, y);
+    abreVizinhos(parseInt(x), parseInt(y));
+  } else{
+    cell.find('strong').text(nearMines).css('color', gOpts.numberColors[nearMines-1]);
   }
 }
 
@@ -183,7 +194,7 @@ function abreVizinhos(x, y){
       for (var j = y-1; j <= y+1; j++) {
         if(j >= 0 && j < gOpts.numColumns){
           if(campoMatrix[i][j] == SAFE){
-            revelarClicado(i, j);
+            revelar(i, j);
           }
         }
       }
@@ -211,10 +222,10 @@ function geraCampo(){
 function geraMinas(){
   if(isNaN(gOpts.numMines)) {
     if (!dificulties.hasOwnProperty(gOpts.numMines)){
-      throw new Error('Incorrect numMines parameter. Use some number or some of the available dificulties');
+      throw new Error('Incorrect numMines parameter. Use some number or some of the available dificulties: '+Object.keys(dificulties).join(','));
       return;
     }
-    gOpts.numMines = gOpts.numRows * gOpts.numColumns * dificulties[gOpts.numMines];
+    gOpts.numMines = Math.floor(gOpts.numRows * gOpts.numColumns * dificulties[gOpts.numMines]);
   } else if(gOpts.numMines/(gOpts.numRows * gOpts.numColumns) > gOpts.mineLimit){
     gOpts.numMines = Math.floor(gOpts.numRows * gOpts.numColumns * gOpts.mineLimit);
 
@@ -281,5 +292,5 @@ function randomIntFromInterval(min,max){
 }
 
 function selectCell(x, y){
-  return $('.'+gOpts.classes.allCells.split(' ').join('.')+'[x="'+x+'"][y="'+y+'"]');
+  return $(cellSelector+'[x="'+x+'"][y="'+y+'"]');
 }
