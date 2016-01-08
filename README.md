@@ -51,7 +51,7 @@ classes : {
   },
 ```
 
-``numberColors``-``array/lsit``-``['#421ecc','#c30f19','#42b60b','#d7a3c2','#cc38ba','#76471f','#1ddffb','#177a70']``=>List of colors of the number of mines aroubd the cell. **Colors are ordered**
+``numberColors``-``array/list``-``['#421ecc','#c30f19','#42b60b','#d7a3c2','#cc38ba','#76471f','#1ddffb','#177a70']``=>List of colors of the number of mines aroubd the cell. **The position of the color on the array matches the number of mines around the clicked cell minus 1. Like this: [0] = 1 mine around, [1] = 2 mines around, [2] = 3 mines around...**
 
 ``mineLimit``-``float``-``0.75``=>Maximum ratio of mines on the grid. If ``numMines`` exceed this percentage, then the ``numMines`` is calculated based on ``mineLimit``
 
