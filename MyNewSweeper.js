@@ -29,7 +29,7 @@ var defaults = {
   numColumns: 12,
   numMines: 20,
 
-  tooManyMinesMsg: "The number of mines can't exceed #percent# of the blocks. Using #numberOfMines# mines this round.",
+  tooManyMinesMsg: "The number of mines can't exceed #percent# of the number of cells. Using #numberOfMines# mines this round.",
   cellsToWinMsg: '#cellsToWin# remaining hidden cells.',
 
   classes : {
@@ -53,10 +53,6 @@ var defaults = {
     '#177a70'
   ],
   mineLimit : 0.75,
-  init : function(){
-    this.row = "<div class='"+this.classes.rows+"'></div>";
-    this.cell = "<div class='"+this.classes.allCells+" "+this.classes.hidden+"'><strong></strong></div>";
-  },
   onGameOver: function(){
     alert('Game Over!');
   },
@@ -75,9 +71,14 @@ function MyNewSweeper(opts){
   //Global object merge
   gOpts = $.extend({}, defaults, opts);
   //Mount elements (rows, cells...) base on classes
-  gOpts.init();
+  MNS_init();
 
   start();
+}
+
+function MNS_init(){
+	gOpts.row = "<div class='"+gOpts.classes.rows+"'></div>";
+    gOpts.cell = "<div class='"+gOpts.classes.allCells+" "+gOpts.classes.hidden+"'><strong></strong></div>";
 }
 
 function start(){
