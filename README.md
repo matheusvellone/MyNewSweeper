@@ -13,7 +13,7 @@ Just create a new MyNewSweeper object passing to the constructor the desired con
 **MyNewSweeper is [jQuery](https://jquery.com/) dependant. Make sure jQuery is loaded before initializing MNS**
 
 # Configuration
-**The default configuration requires [Bootstrap](getbootstrap.com/) to work correctly**
+**The default configuration requires [Bootstrap](htpp://getbootstrap.com/) to work correctly**
 
 ``option``-``type``-``default``=>Explanation
 
