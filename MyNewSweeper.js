@@ -56,7 +56,7 @@ var defaults = {
   onGameOver: function(){
     alert('Game Over!');
   },
-  onClick: function(){},
+  onClick: function(which){},
   onWin: function(){
     alert('You won!');
   },
@@ -91,7 +91,7 @@ function start(){
     var _this = $(this);
     var clickedX = _this.attr('x');
     var clickedY = _this.attr('y');
-    gOpts.onClick();
+    gOpts.onClick(event.which);
     switch (event.which) {
         case 1://LEFT
             teste(function(){

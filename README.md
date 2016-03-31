@@ -62,9 +62,9 @@ onGameOver: function(){
 }
 ```
 
-``onClick``-``function``=>Function to be called when a cell is clicked (**any mouse click on the grid will trigger this function**). Default: 
+``onClick``-``function``=>Function to be called when a cell is clicked (**any mouse click on the grid will trigger this function**). Parameter ``which`` = **event.which**. Default: 
 ```js
-onClick: function(){}
+onClick: function(which){}
 ```
 
 ``onWin``-``function``=>Function to be called when the player win the game. Default: 
